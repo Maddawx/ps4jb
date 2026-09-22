@@ -6,41 +6,38 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <title>RAW GAME</title>
+    <title>Loading</title>
     <style>
       :root {
-        --bg0: #05080d;
-        --bg1: #0a0f16;
-        --panel: rgba(16, 22, 31, 0.72);
-        --panel-solid: #101620;
-        --line: rgba(127, 224, 168, 0.16);
-        --line2: #1b2430;
-        --txt: #dbe4f0;
-        --muted: #8593a8;
-        --faint: #5a6678;
-        --accent: #7fe0a8;
-        --accent2: #57c7ff;
-        --danger: #ff8b80;
-        --warn: #f5d372;
+        --txt: #dbe7fb;
+        --muted: #9fb4d4;
+        --faint: #6d84a8;
+        --cx: #7cc4ff;
+        --cc: #ff6b81;
+        --cs: #e07bd0;
+        --ct: #57e0b0;
+        --ok: #7fe0a8;
+        --warn: #ffcf6b;
+        --bad: #ff6b81;
       }
-
       * {
         box-sizing: border-box;
       }
-
       html,
       body {
         margin: 0;
         padding: 0;
-        min-height: 100%;
+        height: 100%;
       }
-
       body {
         min-height: 100vh;
         display: flex;
         flex-direction: column;
-        position: relative;
-        overflow-x: hidden;
+        align-items: center;
+        justify-content: center;
+        gap: 26px;
+        padding: calc(28px + env(safe-area-inset-top, 0px)) 20px
+          calc(28px + env(safe-area-inset-bottom, 0px));
         color: var(--txt);
         font:
           15px/1.5 "Segoe UI",
@@ -48,601 +45,271 @@
           sans-serif;
         background:
           radial-gradient(
-            900px 520px at 14% -12%,
-            rgba(127, 224, 168, 0.1),
-            transparent 60%
-          ),
-          radial-gradient(
-            900px 620px at 112% 118%,
-            rgba(87, 199, 255, 0.08),
-            transparent 55%
-          ),
-          linear-gradient(180deg, var(--bg1), var(--bg0));
+            130% 90% at 50% -18%,
+            #3f78cc 0%,
+            #1e447e 38%,
+            #0b264d 72%,
+            #061530 100%
+          );
+        background-attachment: fixed;
       }
 
-      /* faint console grid + drifting scanlines, purely decorative */
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        background-image:
-          linear-gradient(rgba(127, 224, 168, 0.05) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(127, 224, 168, 0.05) 1px, transparent 1px);
-        background-size: 44px 44px;
-        -webkit-mask: radial-gradient(circle at 50% 38%, #000, transparent 78%);
-        mask: radial-gradient(circle at 50% 38%, #000, transparent 78%);
-      }
-      body::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: 1;
-        pointer-events: none;
-        opacity: 0.45;
-        background: repeating-linear-gradient(
-          0deg,
-          rgba(0, 0, 0, 0) 0 2px,
-          rgba(0, 0, 0, 0.14) 2px 3px
-        );
-        animation: scan 8s linear infinite;
-      }
-      @keyframes scan {
-        from {
-          background-position: 0 0;
-        }
-        to {
-          background-position: 0 60px;
-        }
-      }
-
-      /* ---- brand ---- */
-      #brand {
-        position: relative;
-        z-index: 2;
+      /* ---- PlayStation glyphs, spinning in turns ---- */
+      #glyphs {
         display: flex;
+        gap: 24px;
         align-items: center;
         justify-content: center;
-        gap: 11px;
-        padding: calc(12px + env(safe-area-inset-top, 0px)) 14px 12px;
-        background: linear-gradient(180deg, #0d1219, #0b0f15);
-        border-bottom: 1px solid var(--line2);
       }
-      #brand img,
-      #brand .logo {
-        width: 30px;
-        height: 30px;
-        border-radius: 9px;
-        filter: drop-shadow(0 0 14px rgba(127, 224, 168, 0.35));
+      .g {
+        width: 46px;
+        height: 46px;
+        opacity: 0.28;
+        transform: scale(0.9);
+        animation: relay 2s ease-in-out infinite;
       }
-      #brand b {
-        font-size: 15px;
-        font-weight: 700;
-        letter-spacing: 0.28em;
-        color: #eaf1f8;
+      .g path,
+      .g circle,
+      .g rect {
+        fill: none;
+        stroke: var(--c);
+        stroke-width: 3.4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
       }
-      #tagline {
-        font:
-          11px/1 Consolas,
-          ui-monospace,
-          monospace;
-        letter-spacing: 0.26em;
-        color: var(--faint);
-        padding-left: 11px;
-        border-left: 1px solid var(--line2);
+      .gx {
+        --c: var(--cx);
+        animation-delay: 0s;
       }
-
-      /* ---- stage ---- */
-      #stage {
-        position: relative;
-        z-index: 2;
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 22px;
-        overflow: hidden;
+      .gc {
+        --c: var(--cc);
+        animation-delay: 0.5s;
       }
-
-      /* ---- status panel (running / done / fail) ---- */
-      #panel {
-        width: 100%;
-        max-width: 420px;
-        margin: auto;
-        position: relative;
-        overflow: hidden;
-        text-align: center;
-        padding: 26px 24px 22px;
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        background: var(--panel);
-        -webkit-backdrop-filter: blur(8px);
-        backdrop-filter: blur(8px);
-        box-shadow:
-          0 20px 60px rgba(0, 0, 0, 0.55),
-          inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      .gs {
+        --c: var(--cs);
+        animation-delay: 1s;
       }
-      @supports not (
-        (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))
-      ) {
-        #panel {
-          background: var(--panel-solid);
-        }
+      .gt {
+        --c: var(--ct);
+        animation-delay: 1.5s;
       }
-      #panel::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          var(--accent),
-          var(--accent2),
-          transparent
-        );
-        opacity: 0.85;
-      }
-
-      #pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 5px 13px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: rgba(127, 224, 168, 0.06);
-        color: var(--accent);
-        font:
-          12px/1 Consolas,
-          ui-monospace,
-          monospace;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-      }
-      #dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--accent2);
-        box-shadow: 0 0 10px var(--accent2);
-        animation: pulse 1.4s ease-in-out infinite;
-      }
-      @keyframes pulse {
+      @keyframes relay {
         0%,
         100% {
-          opacity: 1;
-          transform: scale(1);
+          opacity: 0.24;
+          transform: scale(0.9) rotate(0);
+          filter: drop-shadow(0 0 0 transparent);
         }
-        50% {
-          opacity: 0.35;
-          transform: scale(0.8);
+        7% {
+          opacity: 1;
+          transform: scale(1.16) rotate(0);
+          filter: drop-shadow(0 0 12px var(--c));
+        }
+        18% {
+          opacity: 1;
+          transform: scale(1.16) rotate(360deg);
+          filter: drop-shadow(0 0 12px var(--c));
+        }
+        26% {
+          opacity: 0.24;
+          transform: scale(0.9) rotate(360deg);
+          filter: drop-shadow(0 0 0 transparent);
         }
       }
 
-      #icon {
-        height: 70px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 18px 0 4px;
+      /* ---- status + timer ---- */
+      #status {
+        font-size: 17px;
+        font-weight: 300;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: #cfe0f7;
+        text-indent: 0.32em;
       }
-      #spin {
-        width: 56px;
-        height: 56px;
-        border: 4px solid rgba(127, 224, 168, 0.14);
-        border-top-color: var(--accent);
-        border-right-color: var(--accent2);
-        border-radius: 50%;
-        box-shadow: 0 0 24px rgba(127, 224, 168, 0.18);
-        animation: spin 0.9s linear infinite;
+      #timer {
+        text-align: center;
       }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      .ico {
-        display: none;
-        width: 56px;
-        height: 56px;
-      }
-      .ico-done {
-        color: var(--accent);
-        filter: drop-shadow(0 0 10px rgba(127, 224, 168, 0.5));
-      }
-      .ico-fail {
-        color: var(--danger);
-        filter: drop-shadow(0 0 10px rgba(255, 139, 128, 0.45));
-      }
-      @keyframes pop {
-        from {
-          transform: scale(0.6);
-          opacity: 0;
-        }
-        to {
-          transform: scale(1);
-          opacity: 1;
-        }
-      }
-
-      .lab {
+      #timer .tlabel {
+        display: block;
         font:
           10px/1 Consolas,
           ui-monospace,
           monospace;
-        letter-spacing: 0.24em;
+        letter-spacing: 0.26em;
         text-transform: uppercase;
         color: var(--faint);
-      }
-      #stepwrap {
-        margin-top: 4px;
-      }
-      #curstep {
-        margin-top: 8px;
-        min-height: 18px;
-        padding: 0 6px;
-        font:
-          13px/1.4 Consolas,
-          ui-monospace,
-          monospace;
-        color: var(--muted);
-        word-break: break-word;
-      }
-      .caret {
-        display: inline-block;
-        width: 7px;
-        height: 13px;
-        margin-left: 3px;
-        vertical-align: -2px;
-        background: var(--accent);
-        animation: blink 1s steps(1) infinite;
-      }
-      @keyframes blink {
-        50% {
-          opacity: 0;
-        }
-      }
-
-      #track {
-        position: relative;
-        height: 8px;
-        margin: 20px 2px 22px;
-        border-radius: 6px;
-        overflow: hidden;
-        background: rgba(255, 255, 255, 0.05);
-        box-shadow: inset 0 0 0 1px var(--line);
-      }
-      #bar {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: 38%;
-        border-radius: 6px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          var(--accent),
-          var(--accent2),
-          transparent
-        );
-        box-shadow: 0 0 14px rgba(127, 224, 168, 0.5);
-        animation: sweep 1.25s ease-in-out infinite;
-      }
-      @keyframes sweep {
-        0% {
-          transform: translateX(-140%);
-        }
-        100% {
-          transform: translateX(360%);
-        }
-      }
-
-      #stats {
-        display: flex;
-        gap: 12px;
-      }
-      .stat {
-        flex: 1;
-        padding: 12px 10px;
-        border: 1px solid var(--line2);
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.03);
-      }
-      .mono {
-        margin-top: 7px;
-        font:
-          600 20px/1 Consolas,
-          ui-monospace,
-          monospace;
-        letter-spacing: 0.04em;
-        color: var(--txt);
+        margin-bottom: 8px;
       }
       #elapsed {
-        color: var(--accent);
-      }
-
-      #msg {
-        display: none;
-        margin-top: 16px;
-        color: var(--danger);
         font:
-          13px/1.4 Consolas,
+          200 46px/1 Consolas,
           ui-monospace,
           monospace;
+        letter-spacing: 0.02em;
+        color: #eaf2ff;
       }
 
-      /* ---- state switches driven by jb.js body classes ---- */
-      body.done #spin,
-      body.fail #spin {
-        display: none;
-      }
-      body.done .ico-done {
-        display: block;
-        animation: pop 0.4s ease;
-      }
-      body.fail .ico-fail {
-        display: block;
-        animation: pop 0.4s ease;
-      }
-      body.done #dot {
-        background: var(--accent);
-        box-shadow: 0 0 10px var(--accent);
-        animation: none;
-      }
-      body.done #pill {
-        color: var(--accent);
-        border-color: rgba(127, 224, 168, 0.4);
-        background: rgba(127, 224, 168, 0.1);
-      }
-      body.fail #dot {
-        background: var(--danger);
-        box-shadow: 0 0 10px var(--danger);
-        animation: none;
-      }
-      body.fail #pill {
-        color: var(--danger);
-        border-color: rgba(255, 139, 128, 0.4);
-        background: rgba(255, 139, 128, 0.08);
-      }
-      body.done .caret,
-      body.fail .caret {
-        animation: none;
-        opacity: 0;
-      }
-      body.done #bar,
-      body.fail #bar {
-        animation: none;
-        width: 100%;
-        transform: none;
-        background: var(--accent);
-        box-shadow: 0 0 16px rgba(127, 224, 168, 0.45);
-      }
-      body.fail #bar {
-        background: var(--danger);
-        box-shadow: 0 0 16px rgba(255, 139, 128, 0.4);
-      }
-      body.fail #msg {
-        display: block;
-      }
-
-      /* ---- ?log=1 view ---- */
+      /* ---- log window (#wrap keeps jb.js's {#state,#out} untouched) ---- */
       #wrap {
-        display: none;
-      }
-      body.log #panel {
-        display: none;
-      }
-      body.log #wrap {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        align-self: stretch;
         width: 100%;
-        min-height: 0;
-        padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+        max-width: 560px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        background: rgba(4, 14, 30, 0.5);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        box-shadow:
+          0 18px 50px rgba(0, 0, 0, 0.45),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        overflow: hidden;
       }
-      #logstats {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        padding: 0 2px 10px;
-        border-bottom: 1px solid var(--line2);
+      @supports not (
+        (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))
+      ) {
+        #wrap {
+          background: #071528;
+        }
+      }
+      #state {
+        padding: 10px 14px;
         font:
           11px/1 Consolas,
           ui-monospace,
           monospace;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
         color: var(--muted);
-      }
-      #logstats .mono {
-        margin: 0;
-        display: inline;
-        font-size: 12px;
-        font-weight: 600;
-      }
-      #logstats #elapsed2 {
-        color: var(--accent);
-      }
-      #logstats .sep {
-        color: var(--faint);
-      }
-      #state {
-        margin: 13px 0 10px;
-        font:
-          700 20px/1.2 "Segoe UI",
-          system-ui,
-          sans-serif;
-        letter-spacing: 0.02em;
-        color: var(--txt);
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
       }
       #out {
-        flex: 1;
-        min-height: 0;
+        height: 220px;
+        max-height: 40vh;
         overflow-y: auto;
+        padding: 10px 14px;
         white-space: pre-wrap;
-        padding: 12px 14px;
-        border: 1px solid var(--line2);
-        border-radius: 10px;
-        background: linear-gradient(180deg, #0a0e14, #080b10);
-        box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4);
+        word-break: break-word;
         font:
-          12px/1.55 Consolas,
+          12px/1.6 Consolas,
           ui-monospace,
           monospace;
-        color: #aeb9cb;
+        color: #b7c6de;
+      }
+      #out .line {
+        padding: 1px 0;
       }
       #out::-webkit-scrollbar {
-        width: 10px;
+        width: 9px;
       }
       #out::-webkit-scrollbar-thumb {
         border: 2px solid transparent;
         border-radius: 6px;
-        background: #1e2733;
+        background: rgba(255, 255, 255, 0.14);
         background-clip: content-box;
       }
-
-      /* log line colors from jb.js */
       .ok,
       .safe {
-        color: var(--accent);
-      }
-      .bad,
-      .danger {
-        color: var(--danger);
+        color: var(--ok);
       }
       .warn {
         color: var(--warn);
+      }
+      .bad,
+      .danger {
+        color: var(--bad);
       }
       code {
         color: #9fb3d0;
       }
 
+      #msg {
+        display: none;
+        font:
+          13px/1.4 Consolas,
+          ui-monospace,
+          monospace;
+        color: var(--bad);
+      }
+
+      /* ---- done / fail states from jb.js body classes ---- */
+      body.done .g,
+      body.fail .g {
+        animation: none;
+        opacity: 1;
+        transform: scale(1);
+      }
+      body.done .g path,
+      body.done .g circle,
+      body.done .g rect {
+        stroke: var(--ok);
+        filter: drop-shadow(0 0 8px rgba(127, 224, 168, 0.55));
+      }
+      body.fail .g path,
+      body.fail .g circle,
+      body.fail .g rect {
+        stroke: var(--bad);
+        filter: drop-shadow(0 0 8px rgba(255, 107, 129, 0.5));
+      }
+      body.done #status {
+        color: var(--ok);
+      }
+      body.fail #status {
+        color: var(--bad);
+      }
+      body.fail #msg {
+        display: block;
+      }
+
       @media (prefers-reduced-motion: reduce) {
-        body::after,
-        #spin,
-        #bar,
-        #dot,
-        .caret,
-        .ico {
-          animation: none !important;
-        }
-        #bar {
-          width: 60%;
+        .g {
+          animation: none;
+          opacity: 1;
+          transform: none;
         }
       }
     </style>
   </head>
   <body>
-    <header id="brand">
-      <!-- Swap this <svg> back to your original <img src="data:image/png;base64,..."> if you prefer the raster logo -->
-      <svg
-        class="logo"
-        width="30"
-        height="30"
-        viewBox="0 0 60 60"
-        fill="none"
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#7fe0a8" />
-            <stop offset="1" stop-color="#57c7ff" />
-          </linearGradient>
-        </defs>
-        <rect
-          x="3"
-          y="3"
-          width="54"
-          height="54"
-          rx="16"
-          fill="#0c1119"
-          stroke="url(#lg)"
-          stroke-width="2"
-        />
-        <path
-          d="M20 22l8 8-8 8"
-          stroke="url(#lg)"
-          stroke-width="4.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <rect x="32" y="35" width="13" height="4.5" rx="2.25" fill="url(#lg)" />
-      </svg><b>RAW GAME</b><span id="tagline">exploit</span>
-    </header>
+    <div id="glyphs" aria-hidden="true">
+      <svg class="g gx" viewBox="0 0 40 40">
+        <path d="M11 11 L29 29 M29 11 L11 29" />
+      </svg>
+      <svg class="g gc" viewBox="0 0 40 40">
+        <circle cx="20" cy="20" r="10" />
+      </svg>
+      <svg class="g gs" viewBox="0 0 40 40">
+        <rect x="11" y="11" width="18" height="18" rx="1.5" />
+      </svg>
+      <svg class="g gt" viewBox="0 0 40 40">
+        <path d="M20 9 L30.4 29 L9.6 29 Z" />
+      </svg>
+    </div>
 
-    <main id="stage">
-      <!-- running / done / fail -->
-      <section id="panel" role="status" aria-live="polite">
-        <span id="pill"><span id="dot"></span><span id="pilltext">Running</span></span>
+    <div id="status">Working</div>
 
-        <div id="icon">
-          <div id="spin"></div>
-          <svg class="ico ico-done" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6" opacity=".4" />
-            <path d="M7 12.5l3.2 3.2L17 8.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          <svg class="ico ico-fail" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6" opacity=".4" />
-            <path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
-          </svg>
-        </div>
+    <div id="timer">
+      <span class="tlabel">Elapsed</span>
+      <span id="elapsed">0:00.00</span>
+    </div>
 
-        <div id="stepwrap">
-          <div class="lab">Current step</div>
-          <div id="curstep"><span id="curtext">initializing</span><span class="caret"></span></div>
-        </div>
+    <section id="wrap">
+      <div id="state">Log</div>
+      <div id="out"></div>
+    </section>
 
-        <div id="track"><div id="bar"></div></div>
-
-        <div id="stats">
-          <div class="stat">
-            <div class="lab">Elapsed</div>
-            <div id="elapsed" class="mono">0:00.00</div>
-          </div>
-          <div class="stat">
-            <div class="lab">Step</div>
-            <div id="stepcount" class="mono">0</div>
-          </div>
-        </div>
-
-        <div id="msg">Restart your console</div>
-      </section>
-
-      <!-- ?log=1 -->
-      <section id="wrap">
-        <div id="logstats">
-          <span class="lab">Elapsed</span><span id="elapsed2" class="mono">0:00.00</span>
-          <span class="sep">·</span>
-          <span class="lab">Step</span><span id="stepcount2" class="mono">0</span>
-        </div>
-        <div id="state"></div>
-        <div id="out"></div>
-      </section>
-    </main>
+    <div id="msg">Restart your console</div>
 
     <script type="module">
       import "./jb.js?v=10";
     </script>
 
-    <!-- UI telemetry: reads the DOM only, never writes to jb.js's log or classes -->
+    <!-- UI shell: timer, log capture, error handling. Reads jb.js state, never edits jb.js. -->
     <script>
       (function () {
         var body = document.body;
         var out = document.getElementById("out");
-        var curtext = document.getElementById("curtext");
-        var pilltext = document.getElementById("pilltext");
-        var elapsedEls = [
-          document.getElementById("elapsed"),
-          document.getElementById("elapsed2"),
-        ];
-        var stepEls = [
-          document.getElementById("stepcount"),
-          document.getElementById("stepcount2"),
-        ];
+        var elapsed = document.getElementById("elapsed");
+        var statusEl = document.getElementById("status");
 
         var now =
           window.performance && performance.now
@@ -654,6 +321,7 @@
               };
         var start = now();
         var frozen = null;
+        var atBottom = true;
 
         function pad2(n) {
           n = String(n);
@@ -661,71 +329,111 @@
         }
         function fmt(ms) {
           if (ms < 0) ms = 0;
-          var s = ms / 1000;
-          var m = Math.floor(s / 60);
-          var rem = s - m * 60;
-          var ss = Math.floor(rem);
-          var cs = Math.floor((rem - ss) * 100);
+          var s = ms / 1000,
+            m = Math.floor(s / 60),
+            r = s - m * 60,
+            ss = Math.floor(r),
+            cs = Math.floor((r - ss) * 100);
           return m + ":" + pad2(ss) + "." + pad2(cs);
         }
-        function setAll(els, v) {
-          for (var i = 0; i < els.length; i++) if (els[i]) els[i].textContent = v;
-        }
-        function ended() {
-          return (
-            body.classList.contains("done") || body.classList.contains("fail")
-          );
+        function elapsedNow() {
+          return frozen != null ? frozen : now() - start;
         }
 
         function tick() {
-          setAll(elapsedEls, fmt(frozen != null ? frozen : now() - start));
+          try {
+            elapsed.textContent = fmt(elapsedNow());
+          } catch (e) {}
           if (frozen == null) requestAnimationFrame(tick);
         }
         requestAnimationFrame(tick);
 
-        function refreshSteps() {
-          if (!out) return;
-          var lines = (out.textContent || "").split("\n");
-          var clean = [];
-          for (var i = 0; i < lines.length; i++) {
-            var t = lines[i].trim();
-            if (t) clean.push(t);
-          }
-          setAll(stepEls, String(clean.length));
-          if (clean.length && curtext && !ended()) {
-            var last = clean[clean.length - 1];
-            if (last.length > 90) last = last.slice(0, 90) + "…";
-            curtext.textContent = last;
+        function safe(o) {
+          try {
+            return typeof o === "string" ? o : JSON.stringify(o);
+          } catch (e) {
+            return String(o);
           }
         }
+        function logLine(msg, cls) {
+          try {
+            if (!out) return;
+            var d = document.createElement("div");
+            d.className = "line" + (cls ? " " + cls : "");
+            d.textContent =
+              "[" + (elapsedNow() / 1000).toFixed(2) + "s] " + msg;
+            out.appendChild(d);
+            if (atBottom) out.scrollTop = out.scrollHeight;
+          } catch (e) {}
+        }
 
+        if (out) {
+          out.addEventListener("scroll", function () {
+            atBottom = out.scrollTop + out.clientHeight >= out.scrollHeight - 8;
+          });
+        }
+
+        // mirror console output into the log window
+        ["log", "info", "warn", "error"].forEach(function (k) {
+          var orig = console[k] ? console[k].bind(console) : function () {};
+          console[k] = function () {
+            try {
+              var parts = [];
+              for (var i = 0; i < arguments.length; i++)
+                parts.push(safe(arguments[i]));
+              logLine(
+                parts.join(" "),
+                k === "error" ? "bad" : k === "warn" ? "warn" : "ok"
+              );
+            } catch (e) {}
+            return orig.apply(console, arguments);
+          };
+        });
+
+        // catch anything thrown, including from jb.js
+        window.addEventListener("error", function (e) {
+          var where = e && e.filename
+            ? " (" +
+              e.filename.split("/").pop() +
+              (e.lineno ? ":" + e.lineno : "") +
+              ")"
+            : "";
+          logLine("Error: " + ((e && e.message) || "unknown") + where, "bad");
+        });
+        window.addEventListener("unhandledrejection", function (e) {
+          var r = e && e.reason;
+          logLine(
+            "Unhandled rejection: " + (r && r.message ? r.message : safe(r)),
+            "bad"
+          );
+        });
+
+        function setStatus(t) {
+          try {
+            if (statusEl) statusEl.textContent = t;
+          } catch (e) {}
+        }
         function onState() {
           if (body.classList.contains("done")) {
-            if (frozen == null) frozen = now() - start;
-            setAll(elapsedEls, fmt(frozen));
-            if (pilltext) pilltext.textContent = "Jailbroken";
-            if (curtext) curtext.textContent = "jailbreak complete";
+            if (frozen == null) {
+              frozen = now() - start;
+              setStatus("Complete");
+              logLine("Complete in " + fmt(frozen), "ok");
+            }
           } else if (body.classList.contains("fail")) {
-            if (frozen == null) frozen = now() - start;
-            setAll(elapsedEls, fmt(frozen));
-            if (pilltext) pilltext.textContent = "Failed";
-            if (curtext) curtext.textContent = "exploit failed";
+            if (frozen == null) {
+              frozen = now() - start;
+              setStatus("Failed");
+              logLine("Failed after " + fmt(frozen), "bad");
+            }
           }
         }
-
         new MutationObserver(onState).observe(body, {
           attributes: true,
           attributeFilter: ["class"],
         });
-        if (out) {
-          new MutationObserver(refreshSteps).observe(out, {
-            childList: true,
-            subtree: true,
-            characterData: true,
-          });
-        }
 
-        refreshSteps();
+        logLine("Session started", "ok");
         onState();
       })();
     </script>
